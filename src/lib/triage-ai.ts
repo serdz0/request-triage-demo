@@ -8,7 +8,7 @@ import { DECISION_LABEL, type Decision } from "./types";
 // The AI only suggests. A person always reads the suggestion, can change it,
 // and presses "Record decision" themselves. The key stays on the server.
 export const AI_ENABLED = Boolean(process.env.ANTHROPIC_API_KEY);
-const MODEL = process.env.ANTHROPIC_MODEL || "claude-opus-5-5";
+const MODEL = process.env.ANTHROPIC_MODEL || "claude-sonnet-5-5";
 const DAILY_LIMIT = Math.max(1, Number(process.env.AI_DAILY_LIMIT) || 20);
 
 const Suggestion = z.object({
@@ -61,7 +61,7 @@ export async function suggestTriage(requestId: string): Promise<SuggestionResult
       model: MODEL,
       max_tokens: 2000,
       system: SYSTEM,
-      output_config: { effort: "low", format: zodOutputFormat(Suggestion) },
+      output_config: { effort: "medium", format: zodOutputFormat(Suggestion) },
       messages: [
         {
           role: "user",
