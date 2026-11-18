@@ -68,3 +68,10 @@ export async function takeAiCall(limit: number): Promise<boolean> {
   usage.n += 1;
   return true;
 }
+
+export async function reopenRequest(requestId: string): Promise<boolean> {
+  const request = state().requests.find((r) => r.id === requestId);
+  if (!request || request.status === "new") return false;
+  request.status = "new";
+  return true;
+}

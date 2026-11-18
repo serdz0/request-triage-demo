@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { addDecision, addRequest } from "@/lib/store";
+import { addDecision, addRequest, reopenRequest } from "@/lib/store";
 import { suggestTriage, type SuggestionResult } from "@/lib/triage-ai";
 import { DECISIONS, type Decision } from "@/lib/types";
 
@@ -38,4 +38,11 @@ export async function suggestDecision(requestId: string): Promise<SuggestionResu
   const id = typeof requestId === "string" ? requestId.slice(0, 80) : "";
   if (!id) return { ok: false, error: "Request not found." };
   return suggestTriage(id);
+}
+
+export async function reopenDecision(formData: FormData) {
+  const requestId = text(formData, "requestId", 80);
+  if (!requestId) return;
+  await reopenRequest(requestId);
+  revalidatePath("/");
 }

@@ -101,3 +101,17 @@ export async function takeAiCall(limit: number): Promise<boolean> {
   if (error) throw new Error(`Could not check the AI limit: ${error.message}`);
   return data === true;
 }
+
+// Puts a decided request back in the inbox. Its earlier decisions stay in the log.
+export async function reopenRequest(requestId: string): Promise<boolean> {
+  if (!db) return memory.reopenRequest(requestId);
+  if (!UUID.test(requestId)) return false;
+  const { data, error } = await db
+    .from("requests")
+    .update({ status: "new" })
+    .eq("id", requestId)
+    .neq("status", "new")
+    .select("id");
+  if (error) throw new Error(`Could not reopen the request: ${error.message}`);
+  return (data?.length ?? 0) > 0;
+}

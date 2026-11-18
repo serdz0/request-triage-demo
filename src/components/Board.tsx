@@ -9,7 +9,9 @@ import {
 } from "@/lib/types";
 import { AI_ENABLED } from "@/lib/triage-ai";
 import { Mark } from "./Mark";
+import { reopenDecision } from "@/app/actions";
 import { DecisionForm } from "./DecisionForm";
+import { ReopenButton } from "./ReopenButton";
 import { RequestForm } from "./RequestForm";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
@@ -59,6 +61,14 @@ function Ledger({
   decisions: DecisionEntry[];
 }) {
   const byId = new Map(requests.map((r) => [r.id, r]));
+  // The newest entry per request is its current decision, if the request still carries it.
+  const seen = new Set<string>();
+  const currentIds = new Set<string>();
+  for (const entry of decisions) {
+    if (seen.has(entry.requestId)) continue;
+    seen.add(entry.requestId);
+    if (byId.get(entry.requestId)?.status === entry.decision) currentIds.add(entry.id);
+  }
   const counts = DECISIONS.map((d) => ({
     d,
     n: requests.filter((r) => r.status === d).length,
@@ -85,11 +95,12 @@ function Ledger({
       <ol className="grid rounded-xl border border-line bg-surface">
         {decisions.map((entry, index) => {
           const request = byId.get(entry.requestId);
-          const isKill = entry.decision === "kill";
+          const isCurrent = currentIds.has(entry.id);
+          const isKill = entry.decision === "kill" && isCurrent;
           return (
             <li
               key={entry.id}
-              className={`grid grid-cols-[auto_1fr] gap-x-3 px-4 py-3.5 ${index > 0 ? "border-t border-line" : ""}`}
+              className={`grid grid-cols-[auto_1fr] gap-x-3 px-4 py-3.5 ${index > 0 ? "border-t border-line" : ""} ${isCurrent ? "" : "opacity-70"}`}
             >
               <span className="pt-0.5">
                 <Mark decision={entry.decision as Decision} size={20} />
@@ -99,9 +110,18 @@ function Ledger({
                   {request?.title ?? "Unknown request"}
                 </p>
                 <p className="text-sm text-ink-soft">{entry.reason}</p>
-                <p className="text-xs text-ink-soft/80">
-                  {DECISION_LABEL[entry.decision]} on {dateFormat.format(new Date(entry.decidedAt))}
-                </p>
+                <div className="flex items-center gap-3 text-xs text-ink-soft/80">
+                  <p>
+                    {isCurrent ? "" : "Earlier decision: "}
+                    {DECISION_LABEL[entry.decision]} on {dateFormat.format(new Date(entry.decidedAt))}
+                  </p>
+                  {isCurrent && (
+                    <form action={reopenDecision}>
+                      <input type="hidden" name="requestId" value={entry.requestId} />
+                      <ReopenButton title={request?.title ?? "request"} />
+                    </form>
+                  )}
+                </div>
               </div>
             </li>
           );
