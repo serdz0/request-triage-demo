@@ -1,7 +1,8 @@
 import { createRequest } from "@/app/actions";
+import { SubmitButton } from "./SubmitButton";
 
 const field =
-  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-[0.95rem] text-ink placeholder:text-ink-soft/70 transition-colors focus:border-accent focus:outline-none";
+  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-[0.95rem] text-ink placeholder:text-ink-soft/80 transition-colors focus:border-accent focus:outline-none";
 
 export function RequestForm() {
   return (
@@ -20,11 +21,11 @@ export function RequestForm() {
       <form action={createRequest} className="grid gap-4 border-t border-line px-4 pb-4 pt-4">
         <label className="grid gap-1.5 text-sm font-medium">
           What do you need?
-          <input name="title" required maxLength={120} className={field} />
+          <input name="title" required maxLength={120} placeholder="For example: export the audit log to CSV" className={field} />
         </label>
         <label className="grid gap-1.5 text-sm font-medium">
           What problem does it solve, and for whom?
-          <textarea name="description" required maxLength={600} rows={3} className={field} />
+          <textarea name="description" required maxLength={600} rows={3} placeholder="Who asked, how often it hurts, what they do today." className={`${field} field-sizing-content min-h-24 max-h-56 resize-y`} />
         </label>
         <div className="grid gap-4 sm:grid-cols-2">
           <label className="grid gap-1.5 text-sm font-medium">
@@ -33,15 +34,10 @@ export function RequestForm() {
           </label>
           <label className="grid gap-1.5 text-sm font-medium">
             Team
-            <input name="team" maxLength={60} className={field} />
+            <input name="team" maxLength={60} placeholder="For example: Support" className={field} />
           </label>
         </div>
-        <button
-          type="submit"
-          className="justify-self-start rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-opacity hover:opacity-90"
-        >
-          Add request
-        </button>
+        <SubmitButton pendingLabel="Adding…">Add request</SubmitButton>
       </form>
     </details>
   );

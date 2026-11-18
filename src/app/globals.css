@@ -9,6 +9,7 @@
   --accent: #2d3ce6;
   --accent-ink: #ffffff;
   --accent-wash: #e8eaff;
+  --danger: #b42318;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -21,6 +22,7 @@
     --accent: #7d89ff;
     --accent-ink: #0d1220;
     --accent-wash: #1d2547;
+    --danger: #ff9b8f;
   }
 }
 
@@ -33,6 +35,7 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-wash: var(--accent-wash);
+  --color-danger: var(--danger);
   --font-sans: var(--font-body);
   --font-display: var(--font-display);
 }
