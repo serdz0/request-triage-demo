@@ -93,3 +93,11 @@ export async function addDecision(
   if (error) throw new Error(`Could not save the decision: ${error.message}`);
   return data ? toDecision(data as DecisionRow) : null;
 }
+
+// Counts one AI call against today's cap. Returns false once the cap is reached.
+export async function takeAiCall(limit: number): Promise<boolean> {
+  if (!db) return memory.takeAiCall(limit);
+  const { data, error } = await db.rpc("take_ai_call", { p_limit: limit });
+  if (error) throw new Error(`Could not check the AI limit: ${error.message}`);
+  return data === true;
+}

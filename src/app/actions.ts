@@ -2,6 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { addDecision, addRequest } from "@/lib/store";
+import { suggestTriage, type SuggestionResult } from "@/lib/triage-ai";
 import { DECISIONS, type Decision } from "@/lib/types";
 
 function text(formData: FormData, key: string, max: number): string {
@@ -31,4 +32,10 @@ export async function decideRequest(formData: FormData) {
   if (!requestId || !reason || !DECISIONS.includes(decision)) return;
   await addDecision(requestId, decision, reason);
   revalidatePath("/");
+}
+
+export async function suggestDecision(requestId: string): Promise<SuggestionResult> {
+  const id = typeof requestId === "string" ? requestId.slice(0, 80) : "";
+  if (!id) return { ok: false, error: "Request not found." };
+  return suggestTriage(id);
 }

@@ -8,7 +8,9 @@ import {
   type DecisionEntry,
   type RequestItem,
 } from "@/lib/types";
+import { AI_ENABLED } from "@/lib/triage-ai";
 import { Mark } from "./Mark";
+import { SuggestButton } from "./SuggestButton";
 import { RequestForm } from "./RequestForm";
 
 const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
@@ -65,6 +67,7 @@ function Inbox({ items }: { items: RequestItem[] }) {
                     </div>
                   ))}
                 </fieldset>
+                {AI_ENABLED && <SuggestButton requestId={item.id} />}
                 <label className="grid gap-1.5 text-sm font-medium">
                   Reason
                   <input

@@ -57,3 +57,14 @@ export async function addDecision(
   s.decisions.push(entry);
   return entry;
 }
+
+const globalForAi = globalThis as unknown as { __aiCalls?: { day: string; n: number } };
+
+export async function takeAiCall(limit: number): Promise<boolean> {
+  const day = new Date().toISOString().slice(0, 10);
+  const usage = globalForAi.__aiCalls?.day === day ? globalForAi.__aiCalls : { day, n: 0 };
+  globalForAi.__aiCalls = usage;
+  if (usage.n >= limit) return false;
+  usage.n += 1;
+  return true;
+}
