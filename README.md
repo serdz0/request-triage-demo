@@ -4,7 +4,7 @@ A small workspace for turning incoming requests into **Build, Defer or Kill** de
 
 > Sample data and fake names only. Built with Claude Code from my requirements; I reviewed the output. I did not write the code by hand.
 
-**Live demo:** _coming soon_
+**Live demo:** https://request-triage-demo.vercel.app
 
 ## Why this exists
 
