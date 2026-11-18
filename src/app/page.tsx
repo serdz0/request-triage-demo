@@ -1,22 +1,23 @@
 import { Suspense } from "react";
 import { Board } from "@/components/Board";
-import { RequestForm } from "@/components/RequestForm";
 
 export default function Home() {
   return (
-    <main className="mx-auto grid w-full max-w-5xl gap-8 px-4 py-10">
-      <header className="grid gap-2">
-        <h1 className="text-3xl font-semibold tracking-tight">Request Triage</h1>
-        <p className="max-w-2xl text-zinc-600 dark:text-zinc-400">
-          A small demo of how one product owner can turn a stream of requests into clear decisions:
-          build, defer or kill, each with a reason that stays on record.
+    <main className="mx-auto grid w-full max-w-6xl gap-12 px-5 py-10 sm:px-8 sm:py-16">
+      <header className="grid gap-5">
+        <h1 className="font-display max-w-[16ch] text-[clamp(2.5rem,7vw,4.75rem)] font-bold leading-[0.98] tracking-[-0.03em]">
+          Every request gets a decision and a reason.
+        </h1>
+        <p className="max-w-[56ch] text-lg text-ink-soft">
+          A small workspace for turning requests into build, defer or kill decisions, with the
+          reasoning kept on record.
         </p>
-        <p className="text-xs text-zinc-500">
-          Demo with sample data and fake names. Built with Claude Code from my requirements; I reviewed the output.
+        <p className="max-w-[56ch] text-sm text-ink-soft">
+          Sample data and fake names. Built with Claude Code from my requirements; I reviewed the
+          output.
         </p>
       </header>
-      <RequestForm />
-      <Suspense fallback={<p className="text-sm text-zinc-500">Loading requests…</p>}>
+      <Suspense fallback={<p className="text-ink-soft">Loading requests…</p>}>
         <Board />
       </Suspense>
     </main>

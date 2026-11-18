@@ -8,129 +8,157 @@ import {
   type DecisionEntry,
   type RequestItem,
 } from "@/lib/types";
+import { Mark } from "./Mark";
+import { RequestForm } from "./RequestForm";
 
-const field =
-  "rounded-md border border-zinc-300 bg-white px-2 py-1.5 text-sm text-zinc-900 focus:border-sky-600 focus:outline-none dark:border-zinc-700 dark:bg-zinc-900 dark:text-zinc-100";
+const dateFormat = new Intl.DateTimeFormat("en-GB", { day: "numeric", month: "short" });
 
-const COLUMN_STYLE: Record<Decision, string> = {
-  build: "border-emerald-500/60",
-  defer: "border-amber-500/60",
-  kill: "border-rose-500/60",
-};
-
-function Card({
-  item,
-  decision,
-  children,
-}: {
-  item: RequestItem;
-  decision?: DecisionEntry;
-  children?: React.ReactNode;
-}) {
+function Inbox({ items }: { items: RequestItem[] }) {
   return (
-    <li className="grid gap-2 rounded-lg border border-zinc-200 bg-white p-3 text-sm shadow-sm dark:border-zinc-800 dark:bg-zinc-900">
-      <div className="font-medium">{item.title}</div>
-      <div className="text-xs text-zinc-500">
-        {item.requester} · {item.team}
+    <section aria-labelledby="inbox-heading" className="grid content-start gap-4">
+      <div className="flex items-baseline justify-between gap-4">
+        <h2 id="inbox-heading" className="font-display text-2xl font-bold tracking-tight">
+          Inbox
+        </h2>
+        <p className="text-sm text-ink-soft">{items.length} waiting for a decision</p>
       </div>
-      <p className="text-zinc-700 dark:text-zinc-300">{item.description}</p>
-      {decision ? (
-        <p className="border-t border-zinc-200 pt-2 text-xs text-zinc-600 dark:border-zinc-800 dark:text-zinc-400">
-          <span className="font-medium">Reason:</span> {decision.reason}
+
+      <RequestForm />
+
+      {items.length === 0 ? (
+        <p className="rounded-xl border border-dashed border-line px-4 py-8 text-center text-ink-soft">
+          The inbox is clear. Add a request to triage it.
         </p>
-      ) : null}
-      {children}
-    </li>
+      ) : (
+        <ul className="grid gap-4">
+          {items.map((item) => (
+            <li key={item.id} className="grid gap-4 rounded-xl border border-line bg-surface p-4 sm:p-5">
+              <div className="grid gap-1">
+                <h3 className="font-display text-lg font-semibold leading-snug">{item.title}</h3>
+                <p className="text-sm text-ink-soft">
+                  {item.requester} from {item.team}, {dateFormat.format(new Date(item.createdAt))}
+                </p>
+                <p className="max-w-[62ch] pt-1">{item.description}</p>
+              </div>
+
+              <form action={decideRequest} className="grid gap-3 border-t border-line pt-4">
+                <input type="hidden" name="requestId" value={item.id} />
+                <fieldset className="grid grid-cols-3 gap-2">
+                  <legend className="sr-only">Decision for {item.title}</legend>
+                  {DECISIONS.map((d, index) => (
+                    <div key={d} className="relative">
+                      <input
+                        type="radio"
+                        name="decision"
+                        value={d}
+                        id={`${item.id}-${d}`}
+                        defaultChecked={index === 0}
+                        className="peer sr-only"
+                      />
+                      <label
+                        htmlFor={`${item.id}-${d}`}
+                        className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-line px-2 py-2.5 text-sm font-medium transition-colors hover:border-ink-soft peer-checked:border-accent peer-checked:bg-accent-wash peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
+                      >
+                        <Mark decision={d} size={18} />
+                        {DECISION_LABEL[d]}
+                      </label>
+                    </div>
+                  ))}
+                </fieldset>
+                <label className="grid gap-1.5 text-sm font-medium">
+                  Reason
+                  <input
+                    name="reason"
+                    required
+                    maxLength={300}
+                    placeholder="Say why, in one sentence"
+                    className="w-full rounded-lg border border-line bg-surface px-3 py-2 text-[0.95rem] font-normal text-ink placeholder:text-ink-soft/70 transition-colors focus:border-accent focus:outline-none"
+                  />
+                </label>
+                <button
+                  type="submit"
+                  className="justify-self-start rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-ink transition-opacity hover:opacity-90"
+                >
+                  Record decision
+                </button>
+              </form>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+}
+
+function Ledger({
+  requests,
+  decisions,
+}: {
+  requests: RequestItem[];
+  decisions: DecisionEntry[];
+}) {
+  const byId = new Map(requests.map((r) => [r.id, r]));
+  const counts = DECISIONS.map((d) => ({
+    d,
+    n: requests.filter((r) => r.status === d).length,
+  }));
+
+  return (
+    <section aria-labelledby="ledger-heading" className="grid content-start gap-4 lg:sticky lg:top-6">
+      <h2 id="ledger-heading" className="font-display text-2xl font-bold tracking-tight">
+        Decisions
+      </h2>
+
+      <dl className="grid grid-cols-3 gap-2">
+        {counts.map(({ d, n }) => (
+          <div key={d} className="grid gap-1 rounded-xl border border-line bg-surface px-3 py-3">
+            <dt className="flex items-center gap-2 text-sm text-ink-soft">
+              <Mark decision={d} size={16} />
+              {DECISION_LABEL[d]}
+            </dt>
+            <dd className="font-display text-3xl font-bold leading-none">{n}</dd>
+          </div>
+        ))}
+      </dl>
+
+      <ol className="grid rounded-xl border border-line bg-surface">
+        {decisions.map((entry, index) => {
+          const request = byId.get(entry.requestId);
+          const isKill = entry.decision === "kill";
+          return (
+            <li
+              key={entry.id}
+              className={`grid grid-cols-[auto_1fr] gap-x-3 px-4 py-3.5 ${index > 0 ? "border-t border-line" : ""}`}
+            >
+              <span className="pt-0.5">
+                <Mark decision={entry.decision as Decision} size={20} />
+              </span>
+              <div className="grid gap-0.5">
+                <p className={`font-medium leading-snug ${isKill ? "text-ink-soft line-through decoration-1" : ""}`}>
+                  {request?.title ?? "Unknown request"}
+                </p>
+                <p className="text-sm text-ink-soft">{entry.reason}</p>
+                <p className="text-xs text-ink-soft/80">
+                  {DECISION_LABEL[entry.decision]} on {dateFormat.format(new Date(entry.decidedAt))}
+                </p>
+              </div>
+            </li>
+          );
+        })}
+      </ol>
+    </section>
   );
 }
 
 export async function Board() {
   await connection(); // always render at request time, never from a build-time snapshot
   const [requests, decisions] = await Promise.all([listRequests(), listDecisions()]);
-  const latest = new Map<string, DecisionEntry>();
-  for (const d of decisions) if (!latest.has(d.requestId)) latest.set(d.requestId, d);
-  const byId = new Map(requests.map((r) => [r.id, r]));
-
   const toTriage = requests.filter((r) => r.status === "new");
 
   return (
-    <div className="grid gap-8">
-      <section aria-labelledby="triage-heading" className="grid gap-3">
-        <h2 id="triage-heading" className="text-base font-semibold">
-          To triage ({toTriage.length})
-        </h2>
-        {toTriage.length === 0 ? (
-          <p className="text-sm text-zinc-500">Nothing waiting. Submit a request above.</p>
-        ) : (
-          <ul className="grid gap-3 md:grid-cols-2">
-            {toTriage.map((item) => (
-              <Card key={item.id} item={item}>
-                <form action={decideRequest} className="grid gap-2 border-t border-zinc-200 pt-2 dark:border-zinc-800">
-                  <input type="hidden" name="requestId" value={item.id} />
-                  <div className="flex gap-2">
-                    <select name="decision" defaultValue="build" aria-label="Decision" className={field}>
-                      {DECISIONS.map((d) => (
-                        <option key={d} value={d}>
-                          {DECISION_LABEL[d]}
-                        </option>
-                      ))}
-                    </select>
-                    <input
-                      name="reason"
-                      required
-                      maxLength={300}
-                      placeholder="Why? (required)"
-                      aria-label="Reason"
-                      className={`${field} flex-1`}
-                    />
-                  </div>
-                  <button
-                    type="submit"
-                    className="justify-self-start rounded-md bg-sky-700 px-3 py-1.5 text-sm font-medium text-white hover:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-sky-500"
-                  >
-                    Record decision
-                  </button>
-                </form>
-              </Card>
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section aria-label="Decided requests" className="grid gap-4 md:grid-cols-3">
-        {DECISIONS.map((d) => {
-          const items = requests.filter((r) => r.status === d);
-          return (
-            <div key={d} className={`grid content-start gap-3 rounded-lg border-t-4 bg-zinc-50 p-3 dark:bg-zinc-950 ${COLUMN_STYLE[d]}`}>
-              <h2 className="text-base font-semibold">
-                {DECISION_LABEL[d]} ({items.length})
-              </h2>
-              <ul className="grid gap-3">
-                {items.map((item) => (
-                  <Card key={item.id} item={item} decision={latest.get(item.id)} />
-                ))}
-              </ul>
-            </div>
-          );
-        })}
-      </section>
-
-      <section aria-labelledby="log-heading" className="grid gap-3">
-        <h2 id="log-heading" className="text-base font-semibold">
-          Decision log
-        </h2>
-        <ol className="grid gap-2 text-sm">
-          {decisions.map((d) => (
-            <li key={d.id} className="rounded-md border border-zinc-200 px-3 py-2 dark:border-zinc-800">
-              <span className="font-medium">{DECISION_LABEL[d.decision]}</span>:{" "}
-              {byId.get(d.requestId)?.title ?? "Unknown request"}
-              <span className="block text-xs text-zinc-500">
-                {d.reason} · {new Date(d.decidedAt).toLocaleDateString("en-GB")}
-              </span>
-            </li>
-          ))}
-        </ol>
-      </section>
+    <div className="grid items-start gap-10 lg:grid-cols-[minmax(0,1.25fr)_minmax(0,1fr)]">
+      <Inbox items={toTriage} />
+      <Ledger requests={requests} decisions={decisions} />
     </div>
   );
 }
