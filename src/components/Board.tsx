@@ -100,17 +100,17 @@ function Ledger({
           return (
             <li
               key={entry.id}
-              className={`grid grid-cols-[auto_1fr] gap-x-3 px-4 py-3.5 ${index > 0 ? "border-t border-line" : ""} ${isCurrent ? "" : "opacity-70"}`}
+              className={`grid grid-cols-[auto_1fr] gap-x-3 px-4 py-3.5 ${index > 0 ? "border-t border-line" : ""}`}
             >
               <span className="pt-0.5">
                 <Mark decision={entry.decision as Decision} size={20} />
               </span>
               <div className="grid gap-0.5">
-                <p className={`font-medium leading-snug ${isKill ? "text-ink-soft line-through decoration-1" : ""}`}>
+                <p className={`font-medium leading-snug ${isCurrent ? "" : "text-ink-soft"} ${isKill ? "text-ink-soft line-through decoration-1" : ""}`}>
                   {request?.title ?? "Unknown request"}
                 </p>
                 <p className="text-sm text-ink-soft">{entry.reason}</p>
-                <div className="flex items-center gap-3 text-xs text-ink-soft/80">
+                <div className="flex items-center gap-3 text-xs text-ink-soft">
                   <p>
                     {isCurrent ? "" : "Earlier decision: "}
                     {DECISION_LABEL[entry.decision]} on {dateFormat.format(new Date(entry.decidedAt))}

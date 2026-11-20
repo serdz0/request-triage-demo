@@ -83,7 +83,7 @@ export function DecisionForm({
               />
               <label
                 htmlFor={`${requestId}-${d}`}
-                className="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-line px-2 py-2.5 text-sm font-medium transition-colors hover:border-ink-soft peer-checked:border-accent peer-checked:bg-accent-wash peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
+                className="flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg border border-line-strong px-2 py-2.5 text-sm font-medium transition-colors hover:border-ink-soft peer-checked:border-accent peer-checked:bg-accent-wash peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-accent"
               >
                 <Mark decision={d} size={18} />
                 {DECISION_LABEL[d]}
@@ -107,7 +107,7 @@ export function DecisionForm({
           value={reason}
           onChange={(event) => setReason(event.target.value)}
           placeholder="Why? One or two sentences."
-          className="field-sizing-content max-h-48 min-h-[4.25rem] w-full resize-y rounded-lg border border-line bg-surface px-3 py-2 text-[0.95rem] leading-snug text-ink placeholder:text-ink-soft/80 transition-colors focus:border-accent focus:outline-none"
+          className="field-sizing-content max-h-48 min-h-[4.25rem] w-full resize-y rounded-lg border border-line-strong bg-surface px-3 py-2 text-[0.95rem] leading-snug text-ink placeholder:text-ink-soft transition-colors focus:border-accent focus:outline-none"
         />
         <div className="flex items-start justify-between gap-3 text-xs">
           <p

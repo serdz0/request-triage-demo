@@ -2,11 +2,11 @@ import { createRequest } from "@/app/actions";
 import { SubmitButton } from "./SubmitButton";
 
 const field =
-  "w-full rounded-lg border border-line bg-surface px-3 py-2 text-[0.95rem] text-ink placeholder:text-ink-soft/80 transition-colors focus:border-accent focus:outline-none";
+  "w-full rounded-lg border border-line-strong bg-surface px-3 py-2 text-[0.95rem] text-ink placeholder:text-ink-soft transition-colors focus:border-accent focus:outline-none";
 
 export function RequestForm() {
   return (
-    <details className="group rounded-xl border border-line bg-surface">
+    <details className="group rounded-xl border border-line-strong bg-surface">
       <summary className="flex cursor-pointer list-none items-center justify-between gap-3 px-4 py-3 font-medium marker:hidden [&::-webkit-details-marker]:hidden">
         <span>Add a request</span>
         <span

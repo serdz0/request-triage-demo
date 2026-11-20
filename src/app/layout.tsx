@@ -17,12 +17,19 @@ export const metadata: Metadata = {
   description: "A small demo: turn a stream of requests into build, defer or kill decisions with a reason on record.",
 };
 
+// Runs before the first paint, so a saved light or dark choice never flashes the other theme.
+const themeScript = `try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}`;
+
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${display.variable} ${body.variable} h-full antialiased`}
     >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeScript }} />
+      </head>
       <body className="min-h-full flex flex-col">{children}</body>
     </html>
   );

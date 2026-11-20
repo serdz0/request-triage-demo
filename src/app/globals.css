@@ -1,29 +1,32 @@
 @import "tailwindcss";
 
+/*
+  Each colour is written once as light-dark(light value, dark value).
+  With no saved choice the page follows the visitor's system setting.
+  The switch in the header sets data-theme on <html> to force one side.
+*/
 :root {
-  --paper: #f2f4f8;
-  --surface: #ffffff;
-  --ink: #121826;
-  --ink-soft: #5b6475;
-  --line: #d9dee8;
-  --accent: #2d3ce6;
-  --accent-ink: #ffffff;
-  --accent-wash: #e8eaff;
-  --danger: #b42318;
+  color-scheme: light dark;
+  --paper: light-dark(#f2f4f8, #0d1220);
+  --surface: light-dark(#ffffff, #151c2f);
+  --ink: light-dark(#121826, #eef1f8);
+  --ink-soft: light-dark(#5b6475, #9aa5bd);
+  /* Soft lines for dividers and card edges. */
+  --line: light-dark(#d9dee8, #27304a);
+  /* Lines you interact with (inputs, choice boxes, the switch): at least 3:1 against the card and the page. */
+  --line-strong: light-dark(#76809a, #6f7ca3);
+  --accent: light-dark(#2d3ce6, #7d89ff);
+  --accent-ink: light-dark(#ffffff, #0d1220);
+  --accent-wash: light-dark(#e8eaff, #1d2547);
+  --danger: light-dark(#b42318, #ff9b8f);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --paper: #0d1220;
-    --surface: #151c2f;
-    --ink: #eef1f8;
-    --ink-soft: #9aa5bd;
-    --line: #27304a;
-    --accent: #7d89ff;
-    --accent-ink: #0d1220;
-    --accent-wash: #1d2547;
-    --danger: #ff9b8f;
-  }
+:root[data-theme="light"] {
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -32,6 +35,7 @@
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
   --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-wash: var(--accent-wash);

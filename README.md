@@ -17,6 +17,7 @@ I am a product owner. In my day job, the hard part of a backlog is rarely buildi
 - **Ask Claude:** fills in a suggested decision and a one-sentence reason from the request text and your recent decisions. You can change anything before recording.
 - **Decision log:** every decision with its reason and date. Killed items are struck through.
 - **Reopen:** puts a decided request back in the inbox. The earlier decision stays in the log as history.
+- **Light and dark mode:** a switch in the top right. Without a saved choice the page follows the system setting; the choice is kept in the browser and applied before the first paint, so there is no flash. Text colours meet WCAG AA (4.5:1) and the borders of inputs and choice boxes meet 3:1 in both themes.
 
 ## Product decisions behind it
 

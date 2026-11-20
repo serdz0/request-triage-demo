@@ -1,10 +1,14 @@
 import { Suspense } from "react";
 import { Board } from "@/components/Board";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 export default function Home() {
   return (
     <main className="mx-auto grid w-full max-w-6xl gap-8 px-5 py-8 sm:px-8 sm:py-12">
       <header className="grid gap-4">
+        <div className="-mb-2 flex justify-end">
+          <ThemeToggle />
+        </div>
         <h1 className="font-display max-w-[22ch] text-[clamp(2rem,5.2vw,3.5rem)] font-bold leading-[1.02] tracking-[-0.03em]">
           Every request gets a decision and a reason.
         </h1>
